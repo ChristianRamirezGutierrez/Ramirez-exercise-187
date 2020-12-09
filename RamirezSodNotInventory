@@ -1,0 +1,358 @@
+//AUTHOR: Christian Ramirez Gutierrez
+//COURSE: CPT187
+//PURPOSE: The purpose class is to contain and store item names, prices and IDs; it also displays discount names and rates and gives out a random prize.
+//STARTDATE: 12/3/2020
+
+package edu.cpt187.ramirez.exercise6;
+
+//imports=====================
+import java.util.Random;
+import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.IOException;
+//============================
+
+public class Inventory 
+{//Opening Curly Brace
+	//Declaring and initializing Constants
+	private final String[] DISCOUNT_NAMES = {"Member", "Senior", "No Discount"};
+	private final double[] DISCOUNT_RATES = {0.25, 0.15, 0.0};
+	private final String[] PRIZE_NAMES = {"staff", "sword", "bow"};
+	private final int MAX_RECORDS = 45;
+	private final int NOT_FOUND = -1;
+	private final int ONE = 1;
+	private final int RESET_VALUE = 0;
+
+	//Declaring and initializing Variables
+	private int[] itemIDs = new int[MAX_RECORDS];
+	private String[] itemNames = new String[MAX_RECORDS];
+	private double[] itemPrices = new double[MAX_RECORDS];
+	private int[] orderQuantity  = new int[MAX_RECORDS];
+	private double[] orderTotal = new double[MAX_RECORDS];
+	private int[] inStockCounts = new int[MAX_RECORDS];
+	private int itemSearchIndex = 0;
+	private int recordCount = 0;
+	private Random prizeGenerator = new Random();
+
+
+	//Inventory Class Constuctor
+	public Inventory() 
+	{//Opening Curly Brace
+		//Closing Curly Brace
+	}//END OF Inventory constructor
+
+	//Setter method
+	public void setReduceStock(int borrowedHowMany) 
+	{//Opening Curly Brace
+		inStockCounts[itemSearchIndex] = inStockCounts[itemSearchIndex]- borrowedHowMany;
+		//Closing Curly Brace
+	}//END of setReduceStock
+
+	//Setter method
+	public void setLoadItems(String borrowedFileName)
+	{//Opening Curly Brace
+
+		try 
+		{//Opening Curly Brace
+			//scanner infile
+			Scanner infile = new Scanner(new FileInputStream(borrowedFileName));
+
+			//while structure
+			while(infile.hasNext() == true && recordCount < MAX_RECORDS) 
+			{//Opening Curly Brace
+				//assigns values to arrays
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				inStockCounts[recordCount] = infile.nextInt();
+				recordCount++;
+				//Closing Curly Brace
+			}//END OF while structure
+
+			//infile close
+			infile.close();	
+
+			//sorting
+			setBubbleSort();
+			//Closing Curly Brace
+		}//END OF Try
+		catch (IOException ex)
+		{//Opening Curly Brace
+			//if file not found flag set to not found
+			recordCount = NOT_FOUND;
+			//Closing Curly Brace
+		}//END OF catch
+	}//END OF setLoadItems
+
+	//Setter method
+	public void setLoadItems(String borrowedFileName, int borrowedSize) 
+	{//Opening Curly Brace
+
+		try 
+		{//Opening Curly Brace
+			//scanner infile
+			Scanner infile = new Scanner(new FileInputStream(borrowedFileName));
+
+			//while structure
+			while(infile.hasNext() == true && recordCount < MAX_RECORDS &&  recordCount < borrowedSize) 
+			{//Opening Curly Brace
+				//assigns file values to array
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				inStockCounts[recordCount] = infile.nextInt();
+				recordCount++;
+				//Closing Curly Brace
+			}//END OF while structure
+			//infile close
+			infile.close();	
+
+			//sorting
+			setBubbleSort();
+			//Closing Curly Brace
+		}//END OF Try
+		catch (IOException ex)
+		{//Opening Curly Brace
+			//if not found flag set to not found
+			recordCount = NOT_FOUND;
+			//Closing Curly Brace
+		}//END OF catch
+	}//END OF setLoadItems
+
+	//Setter method
+	public void setSearchIndex(int borrowedID) 
+	{//Opening Curly Brace
+		itemSearchIndex = getSearchResults(borrowedID);
+		//Closing Curly Brace
+	}//END OF setSearchIndex
+
+	//Setter method
+	public void setBubbleSort()
+	{//Opening Curly Brace
+		//Declaring and initilizng local variables
+		boolean localSwap = true;
+		int localLast = 0;
+		int localIndex = 0;
+
+		localLast = recordCount - ONE;
+
+		//while structure
+		while(localLast > RESET_VALUE)
+		{//Opening Curly Brace
+			localIndex = RESET_VALUE;
+			localSwap = false;
+
+			localLast = recordCount - ONE;
+
+			//while structure
+			while(localIndex < localLast)
+			{//Opening Curly Brace
+				//if structure
+				if(itemIDs[localIndex] > itemIDs[localIndex + ONE]) 
+				{//Opening Curly Brace
+					setSwapArrayElements(localIndex);
+					localSwap = true;
+					//Closing Curly Brace
+				}//END OF if structure
+				localIndex ++;
+			}//END OF while structure
+			//if structure
+			if(localSwap == false) 
+			{//Opening Curly Brace
+				localLast = RESET_VALUE;
+				//Closing Curly Brace
+			}//END OF if structure
+			else 
+			{//Opening Curly Brace
+				localLast --;
+				//Closing Curly Brace
+			}//END OF else structure
+		}//END OF while structure
+	}//END OF setBubbleSort
+
+	//Setter method
+	public void setSwapArrayElements(int borrowedIndex) 
+	{//Opening Curly Brace
+		int localItemIDs = itemIDs[borrowedIndex];
+		String localItemNames = itemNames[borrowedIndex];
+		double localItemPrices = itemPrices[borrowedIndex];
+		int localInStockCounts = inStockCounts[borrowedIndex];
+		int localQuantity = orderQuantity[borrowedIndex];
+		double localCost = orderTotal[borrowedIndex];
+		itemIDs[borrowedIndex] = itemIDs[borrowedIndex + ONE];
+		itemIDs[borrowedIndex + ONE] = localItemIDs;
+		itemNames[borrowedIndex] = itemNames[borrowedIndex + ONE];
+		itemNames[borrowedIndex + ONE] = localItemNames;
+		itemPrices[borrowedIndex] = itemPrices[borrowedIndex + ONE];
+		itemPrices[borrowedIndex + ONE] = localItemPrices;
+		inStockCounts[borrowedIndex] = inStockCounts[borrowedIndex + ONE];
+		inStockCounts[borrowedIndex + ONE] = localInStockCounts;
+		orderQuantity[borrowedIndex] = orderQuantity[borrowedIndex + ONE];
+		orderQuantity[borrowedIndex + ONE] = localQuantity;
+		orderTotal[borrowedIndex] = orderTotal[borrowedIndex + ONE];
+		orderTotal[borrowedIndex + ONE] = localCost;		
+		//Closing Curly Brace
+	}//END OF setSwapArrayElements
+
+	//Getter method
+	public int[] getInStockCounts() 
+	{//Opening Curly Brace
+		return inStockCounts;
+		//Closing Curly Brace
+	}//END OF getInStockCounts
+
+	//Getter method
+	public int[] getItemIDs() 
+	{//Opening Curly Brace
+		return itemIDs;
+		//Closing Curly Brace
+	}//END OF getItemIDs
+
+	//Getter method
+	public String[] getItemNames() 
+	{//Opening Curly Brace
+		return itemNames;
+		//Closing Curly Brace
+	}//END OF getItemNames
+
+	//Getter method
+	public double[] getItemPrices() 
+	{//Opening Curly Brace
+		return itemPrices;
+		//Closing Curly Brace
+	}//END OF getItemPrices
+
+	//Getter method
+	public String[] getDiscountNames()
+	{//Opening Curly Brace
+		return DISCOUNT_NAMES;
+		//Closing Curly Brace
+	}//END OF getDiscountNames
+
+	//Getter method
+	public double[] getDiscountRates() 
+	{//Opening Curly Brace
+		return DISCOUNT_RATES;
+		//Closing Curly Brace
+	}//END OF getDiscountPrices
+
+	//Getter method
+	public int[] getOrderQuantities() 
+	{//Opening Curly Brace
+		return orderQuantity;
+		//Closing Curly Brace
+	}//END OF getOrderQuantities
+
+	//Getter method
+	public double[] getOrderTotals()
+	{//Opening Curly Brace
+		return orderTotal;
+		//Closing Curly Brace
+	}//END OF getOrderTotals
+
+	//Getter method
+	public String[] getPrizeNames() 
+	{//Opening Curly Brace
+		return PRIZE_NAMES;
+		//Closing Curly Brace
+	}//END OF getPrizeNames
+
+	//Getter method
+	public int getRandomNumber() 
+	{//Opening Curly Brace
+		return prizeGenerator.nextInt(PRIZE_NAMES.length);
+		//Closing Curly Brace
+	}//END OF getRandomNumber
+
+	//Getter method
+	public int getMaxRecords()
+	{//Opening Curly Brace
+		return MAX_RECORDS;
+		//Closing Curly Brace
+	}//END OF getMaxRecords
+
+	//Getter method
+	public int getItemSearchIndex()
+	{//Opening Curly Brace
+		return itemSearchIndex;
+		//Closing Curly Brace
+	}//END OF getItemSearchIndex
+
+	//Getter method
+	public int getRecordCount() 
+	{//Opening Curly Brace
+		return recordCount;
+		//Closing Curly Brace
+	}//END OF getRecordCount
+
+	//Getter method
+	public double getGrandTotal()
+	{//Opening Curly Brace	
+		//Declaring and initilizing local variables
+		double localTotal = 0;
+		int localIndex = 0;
+
+		//while structure
+		while(localIndex < orderTotal[localIndex] + localTotal)
+		{//Opening Curly Brace
+			localTotal = orderTotal[localIndex] + localTotal;
+			localIndex ++;
+			//Closing Curly Brace
+		}//END OF while structure
+		return localTotal;
+	}//END OF getGrandTotal
+
+	//Getter method
+	public int getSearchResults(int borrowedBorrowedID) 
+	{//Opening Curly Brace
+		//Declaring and initializing Constant
+		final int TWO = 2;
+
+		//Declaring and initilizing local variables
+		int localFirst = 0;
+		int localLast = 0;
+		int localMid = 0;
+		boolean localFound = false;
+
+		localLast = recordCount - ONE; 
+
+		//While structure
+		while(localFirst <= localLast && localFound == false)
+		{//Opening Curly Brace
+			localMid = (localFirst + localLast) / TWO;
+
+			//If Structure
+			if (itemIDs[localMid] == borrowedBorrowedID)
+			{//Opening Curly Brace
+				localFound = true;
+				//Closing Curly Brace
+			}//END OF if structure
+			else	
+			{//Opening Curly Brace
+				//if structure
+				if(itemIDs[localMid] < borrowedBorrowedID)
+				{//Opening Curly Brace
+					localFirst = localMid + ONE;
+					//Closing Curly Brace
+				}//END OF if structure
+				else 
+				{//Opening Curly Brace
+					localLast = localMid - ONE;
+					//Closing Curly Brace
+				}//END OF else structure
+				//Closing Curly Brace
+			}//END OF else structure
+			//Closing Curly Brace
+		}//END OF while structure
+
+		//if structure
+		if(localFound == false)
+		{//Opening Curly Brace
+			localMid = NOT_FOUND;
+			//Closing Curly Brace
+		}//END OF if structure
+		return localMid;
+		//Closing Curly Brace
+	}//END OF getSearchResults
+	//Closing Curly Brace
+}//END OF Inventory class
