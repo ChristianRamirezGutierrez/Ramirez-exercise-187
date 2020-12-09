@@ -1,0 +1,73 @@
+//AUTHOR: Christian Ramirez Gutierrez
+//COURSE: CPT187
+//PURPOSE: The purpose is to write out the order for a customer to see or have
+//STARTDATE: 11/3/2020
+
+package edu.cpt187.ramirez.exercise6;
+
+//imports==================
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+//=========================
+
+public class WriteOrder 
+{//Opening Curly Brace
+	//Declaring and initiliazing variables
+	private boolean fileFound = true;
+	private String masterFileName = "";
+	private int recordCount = 0;
+	
+	//WriteOrder class Construct
+	public WriteOrder(String borrowedFileName) 
+	{//Opening Curly Brace
+		masterFileName = borrowedFileName;
+		//Closing Curly Brace
+	}//END OF WriteOrder Construct
+
+	//Setter method
+	public void setWriteOrder(int borrowedItemID, String borrowedItemName, double borrowedItemPrice, int borrowedQuantity, double borrowedOrderCost) 
+	{//Opening Curly Brace
+		try
+		{//Opening Curly Brace
+			PrintWriter filePW = new PrintWriter(new FileWriter(masterFileName, true));
+
+			//writes a new file
+			filePW.printf("%d\t%s\t%.2f\t%d\t%.2f\n", borrowedItemID, borrowedItemName, borrowedItemPrice,borrowedQuantity, borrowedOrderCost);
+			fileFound = true;
+			recordCount++;
+
+			//filePw close
+			filePW.close();
+			//Closing Curly Brace
+		}//END OF try
+		catch (IOException ex)
+		{//Opening Curly Brace
+			//if not found flag set to false
+			fileFound = false;
+			//Closing Curly Brace
+		} // END OF CATCH		
+	}//END OF setWriteOrder
+
+	//Getter method
+	public boolean getFileFoundFlag() 
+	{//Opening Curly Brace
+		return fileFound;
+		//Closing Curly Brace
+	}//END OF getFileFoundFlag
+
+	//Getter method
+	public String getfileName() 
+	{//Opening Curly Brace
+		return masterFileName;
+		//Closing Curly Brace
+	}//END OF getFileName
+
+	//Getter method
+	public int getRecordCount() 
+	{//Opening Curly Brace
+		return recordCount;
+		//Closing Curly Brace
+	}//END OF getRecordCount 
+	//Closing Curly Brace
+}//END OF WriteOrder class
